@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const slugify = require('slugify')
 const tourSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -6,6 +7,7 @@ const tourSchema = new mongoose.Schema({
     unique: true,
     trim: true
   },
+  slug: String,
   duration: {
     type: Number,
     require: [true, 'A tour must have a duration']
@@ -47,10 +49,38 @@ const tourSchema = new mongoose.Schema({
   images: [String],
   createdAt: {
     type: Date,
-    default: Date.now()
+    default: Date.now(),
+    select: false
   },
   startDates: [Date]
+}, {
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 })
+
+// Don't use virtual properties as queries, they basically don't exist
+// to use (this) we must use the function keyword not a callback
+// Knowing the duration in weeks is a business model , so it is done in the model not controller
+tourSchema.virtual('durationWeeks').get(function () {
+  return this.duration / 7
+})
+
+// DOCUMENT MIDDLEWARE runs before .save() and .create() but not .insertMany
+// pre middleware
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true })
+  next()
+})
+
+// tourSchema.pre('save', function (next) {
+//   console.log('Will save document...')
+//   next()
+// })
+// // Document Post middleware
+// tourSchema.post('save', function (doc, next) {
+//   console.log(doc)
+//   next()
+// })
 
 const Tour = mongoose.model('Tour', tourSchema)
 module.exports = Tour
