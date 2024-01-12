@@ -22,6 +22,8 @@ module.exports = {
     ecmaVersion: 2022
   },
   rules: {
-    'no-path-concat': 'off'
+    'no-path-concat': 'off',
+    semi: 'off',
+    singleQuote: false
   }
-}
+};
