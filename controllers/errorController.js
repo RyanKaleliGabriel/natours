@@ -1,10 +1,21 @@
 const AppError = require("../utils/appError");
 
+
 const handleCastErrorDB = err => {
     const message = `Invalid ${err.path}: ${err.value}`;
     return new AppError(message, 404);
 };
 
+const handleDuplicateDB = err => {
+    const message = `Duplicate field value: ${err.keyValue.name}. PLease use another value`;
+    return new AppError(message, 404);
+};
+
+const handleValidationErrorDb = err => {
+    const errors = Object.values(err.errors).map(el => el.message);
+    const message = `Invalid input data. ${errors.join('. ')}`;
+    return new AppError(message, 400);
+};
 
 const sendErrorDev = (err, res) => {
     res.status(err.statusCode).json({
@@ -43,14 +54,24 @@ module.exports = (err, req, res, next) => {
         sendErrorDev(err, res);
 
     } else if (process.env.NODE_ENV === 'production ') {
-        let error = { ...err };
+        let error = JSON.stringify(err);
+        error = JSON.parse(error);
+
         if (error.name === 'CastError') error = handleCastErrorDB(error);
+        if (error.code === 11000) error = handleDuplicateDB(error);
+        if (error.name === 'ValidationError') error = handleValidationErrorDb(error);
+
         sendErrorProd(error, res);
     }
 };
 
 
-///In the package.json the script is this 
+///In the package.json the script is this
 // "start:prod": "set NODE_ENV=production && nodemon server.js",
 //there is space after production
 // if there is space you should also leave space in the else if block
+
+
+// More error handling features
+//Defining different error handling levels like error not important, medium important, critical important
+//Email admin for critical errors
