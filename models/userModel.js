@@ -46,7 +46,12 @@ const userSchema = new mongoose.Schema({
         type: Date
     },
     passwordResetToken: String,
-    passwordResetExpires: Date
+    passwordResetExpires: Date,
+    active: {
+        type: Boolean,
+        default: true,
+        select: false
+    }
 });
 
 // Mongoose DOCUMENT MIDDLEWARE runs before .save() and .create() but not .insertMany
@@ -70,6 +75,17 @@ userSchema.pre('save', function (next) {
 
     //To ensure the token is created after the password has been changed
     this.passwordChangedAt = Date.now() - 1000;
+    next();
+});
+
+
+//query document runs before the find query is called
+// Firstly, Mongoose middleware functions should be applied to the schema, 
+//not directly to a query. Also, it's a good practice to use pre middleware 
+//on the find hook directly without the need for a regular expression.
+userSchema.pre('find', function (next) {
+    // this points to the current query
+    this.where({ active: {$ne: false} });
     next();
 });
 
