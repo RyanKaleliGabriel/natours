@@ -23,7 +23,6 @@ module.exports = {
   },
   rules: {
     'no-path-concat': 'off',
-    semi: 'off',
-    singleQuote: false
+    semi: 'off'
   }
 };

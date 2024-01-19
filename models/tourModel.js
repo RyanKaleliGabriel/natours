@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
+// const User = require('./userModel');
+
 const tourSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -8,7 +10,7 @@ const tourSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     maxlength: [40, 'A tour name must have less or equal than 40 characters'],
-    minlength: [10, 'A tour name must have more or equal than 10 characters'],
+    minlength: [10, 'A tour name must have more or equal than 10 characters']
     // validate: [validator.isAlpha, 'Tour Name must only contain characters' ]
   },
   slug: String,
@@ -31,8 +33,8 @@ const tourSchema = new mongoose.Schema({
   ratingsAverage: {
     type: Number,
     default: 4.5,
-    min: [1, "Rating must be above 1.0"],
-    max: [5, "Rating must be below 5.0"]
+    min: [1, 'Rating must be above 1.0'],
+    max: [5, 'Rating must be below 5.0']
   },
   ratingsQuantity: {
     type: Number,
@@ -49,10 +51,9 @@ const tourSchema = new mongoose.Schema({
         // THIS only points to current doc and New document creation and not update
         return val < this.price;
       },
-      message: "Discount Price ({VALUE}) should be below the regular price"
+      message: 'Discount Price ({VALUE}) should be below the regular price'
 
     }
-
 
   },
   summary: {
@@ -78,7 +79,37 @@ const tourSchema = new mongoose.Schema({
   secretTour: {
     type: Boolean,
     default: false
-  }
+  },
+  startLocation: {
+    // GeoJSON
+    type: {
+      type: String,
+      default: 'Point',
+      enum: ['Point']
+    },
+    coordinates: [Number],
+    address: String,
+    description: String
+  },
+  locations: [
+    {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point']
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+      day: Number
+    }
+  ],
+  guides: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User'
+    }
+  ]
 }, {
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
@@ -97,6 +128,13 @@ tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
+
+// tourSchema.pre('save', async function (next) {
+//   // This will be an array full of promises
+//   const guidesPromises = this.guides.map(async id => await User.findById(id))
+//   this.guides = await Promise.all(guidesPromises)
+//   next()
+// })
 
 // tourSchema.pre('save', function (next) {
 //   console.log('Will save document...')
