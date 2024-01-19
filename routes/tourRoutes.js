@@ -1,6 +1,8 @@
 const express = require('express');
 const tourController = require('./../controllers/tourController');
 const authController = require('../controllers/authController');
+const reviewRouter = require('../routes/reviewRoute')
+// const reviewController = require('../controllers/reviewController');
 
 const router = express.Router();
 
@@ -28,4 +30,9 @@ router
     tourController.deleteTour
   );
 
+// POST /tour/1283das/reviews
+// GET /tour/1283das/reviews
+
+// Nested routes
+router.use('/:tourId/reviews', reviewRouter)
 module.exports = router;
