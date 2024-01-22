@@ -1,7 +1,6 @@
 const Tour = require('./../models/tourModel');
-const APIfeatures = require('../utils/apiFeatures');
+// const APIfeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
 const factory = require('./handlerFactory')
 
 exports.aliasTopTours = (req, res, next) => {
@@ -11,47 +10,8 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  console.log(req.query);
-  // EXECUTE QUERY
-  const features = new APIfeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  const tours = await features.query;
-
-  // SEND RESPONSE
-  res.status(200).json({
-
-    // success 200 code
-    // fail if there was an error at the client
-    // error if there was an error in the client
-
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours
-    }
-  });
-});
-
-exports.getTour = catchAsync(async (req, res, next) => {
-  // Populate is only used in the query
-  const tour = await Tour.findById(req.params.id).populate('reviews');
-  // Tour.findOne({_id:req.params.id})
-
-  if (!tour) {
-    return next(new AppError('No tour found with that id', 404));
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour
-    }
-  });
-});
-
+exports.getAllTours = factory.getAll(Tour)
+exports.getTour = factory.getOne(Tour, { path: 'reviews' });
 exports.createTour = factory.createOne(Tour)
 // DO NOT UPDATE PASSWORDS WITH THIS!
 exports.updateTour = factory.updateOne(Tour)

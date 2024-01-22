@@ -1,8 +1,11 @@
 const express = require('express');
 const reviewController = require('../controllers/reviewController');
-const authController = require('../controllers/authController')
+const authController = require('../controllers/authController');
 
 const router = express.Router({ mergeParams: true });
+// Middleware runs in sequence
+// so this next line of code will protect all routes after it
+router.use(authController.protect);
 // POST /tour/1283das/reviews
 // POST /tour/reviews
 // GET /tour/1283das/reviews
@@ -10,15 +13,16 @@ const router = express.Router({ mergeParams: true });
 
 router.route('/')
   .get(reviewController.getAllReviews)
+
   .post(
-    authController.protect,
     authController.restrictTo('user'),
     reviewController.setTourUserIds,
     reviewController.createReview
   );
 
 router.route('/:id')
-  .delete(reviewController.deleteReview)
-  .patch(reviewController.updateReview)
+  .get(reviewController.getReview)
+  .delete(authController.restrictTo('user', 'admin'), reviewController.deleteReview)
+  .patch(authController.restrictTo('user', 'admin'), reviewController.updateReview);
 
-module.exports = router
+module.exports = router;

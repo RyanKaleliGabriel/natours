@@ -116,6 +116,15 @@ const tourSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
+// Sorting the index in an ascending order(1) descending order(-1)
+// By indexing when we query a document we don't have to scan all the documents
+// Makes it more faster for the mongodb engine to find them
+// tourSchema.index({ price: 1 });
+
+// Can work for both or one field
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 })
+
 // Don't use virtual properties as queries, they basically don't exist
 // to use (this) we must use the function keyword not a callback
 // Knowing the duration in weeks is a business model , so it is done in the model not controller
@@ -128,7 +137,7 @@ tourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour',
   localField: '_id'
-})
+});
 
 // Mongoose DOCUMENT MIDDLEWARE runs before .save() and .create() but not .insertMany
 // pre middleware
@@ -173,8 +182,8 @@ tourSchema.pre(/^find/, function (next) {
     path: 'guides',
     select: '-__v -passwordChangedAt'
   });
-  next()
-})
+  next();
+});
 
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds`);

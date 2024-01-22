@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
+
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
 router.patch(
@@ -13,12 +14,20 @@ router.patch(
   authController.protect,
   authController.updatePassword);
 
+// Middleware runs in sequence
+// so this next line of code will protect all routes after it
+router.use(authController.protect)
+
 // Th id of the user that is going to be updated comes from request.user
 // Which was set by the protect middleware
 // Which in turngot the id from the jwt
-// No one can change the id from the jswt without knowing the secret
-router.patch('/updateMe', authController.protect, userController.updateMe);
-router.delete('/deleteMe', authController.protect, userController.deleteMe)
+// No one can change the id from the jwt without knowing the secret
+// In the get method the getUser handler is called to put that user id into the params.id (faking that the id is coming from the url )
+router.get('/me', userController.getMe, userController.getUser)
+router.patch('/updateMe', userController.updateMe);
+router.delete('/deleteMe', userController.deleteMe)
+
+router.use(authController.restrictTo('admin'))
 
 router
   .route('/')
