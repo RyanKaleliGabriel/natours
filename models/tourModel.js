@@ -34,7 +34,8 @@ const tourSchema = new mongoose.Schema({
     type: Number,
     default: 4.5,
     min: [1, 'Rating must be above 1.0'],
-    max: [5, 'Rating must be below 5.0']
+    max: [5, 'Rating must be below 5.0'],
+    set: val => Math.round(val * 10) / 10 // 4.666667, 46.666667, 47, 4.7
   },
   ratingsQuantity: {
     type: Number,
@@ -123,7 +124,10 @@ const tourSchema = new mongoose.Schema({
 
 // Can work for both or one field
 tourSchema.index({ price: 1, ratingsAverage: -1 });
-tourSchema.index({ slug: 1 })
+tourSchema.index({ slug: 1 });
+// 2dsphere index is used when using real points on the earth for geospatial data
+// 2d index for any 2d object
+tourSchema.index({ startLocation: '2dsphere' })
 
 // Don't use virtual properties as queries, they basically don't exist
 // to use (this) we must use the function keyword not a callback
@@ -193,12 +197,12 @@ tourSchema.post(/^find/, function (docs, next) {
 
 // AGGREGATION MIDDLEWARE
 // Excluding all secret tours from the aggregation pipeline
-tourSchema.pre('aggregate', function (next) {
-  // add an element at the beginnig of an array
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  console.log(this.pipeline());
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   // add an element at the beginnig of an array
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   console.log(this.pipeline());
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;

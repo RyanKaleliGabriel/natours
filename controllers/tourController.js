@@ -1,7 +1,8 @@
 const Tour = require('./../models/tourModel');
 // const APIfeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
-const factory = require('./handlerFactory')
+const factory = require('./handlerFactory');
+const AppError = require('../utils/appError');
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
@@ -10,12 +11,12 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-exports.getAllTours = factory.getAll(Tour)
+exports.getAllTours = factory.getAll(Tour);
 exports.getTour = factory.getOne(Tour, { path: 'reviews' });
-exports.createTour = factory.createOne(Tour)
+exports.createTour = factory.createOne(Tour);
 // DO NOT UPDATE PASSWORDS WITH THIS!
-exports.updateTour = factory.updateOne(Tour)
-exports.deleteTour = factory.deleteOne(Tour)
+exports.updateTour = factory.updateOne(Tour);
+exports.deleteTour = factory.deleteOne(Tour);
 
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
@@ -91,6 +92,74 @@ exports.getMonthlyPlan = catchAsync(async (req, res) => {
   res.status(200).json({
     status: 'Success',
     data: plan
+  });
+});
+
+// '/tours-within/:distance/center/:latlng/unit/:unit'
+// /tours-distance/223/center/34.1042585,-119.2382592/unit/mi
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+  if (!lat || !lng) {
+    next(new AppError('Please provide latitude and longitude in the format lat,lng', 400));
+  }
+
+  // This operation finds documents that are located within a certain distance of our starting point
+  const tours = await Tour.find({
+    startLocation: {
+      $geoWithin: {
+        $centerSphere: [
+          [lng, lat], radius
+        ]
+      }
+    }
+  });
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      data: tours
+    }
+  });
+});
+
+// Looks for which tour is closer to the marked location in the url (in coordinates)
+exports.getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001
+
+  if (!lat || !lng) {
+    next(new AppError('Please provide latitude and longitude in the format lat,lng', 400));
+  }
+
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1]
+        },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier
+      }
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1
+      }
+    }
+  ])
+
+  res.status(200).json({
+    status: 'success',
+    results: distances.length,
+    data: {
+      data: distances
+    }
   });
 });
 
