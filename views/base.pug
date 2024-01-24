@@ -1,17 +1,25 @@
-meta(charset="UTF-8")
-meta(name="viewport", content="width=device-width,initial-scale=1")
-link(href="https://fonts.googleapis.com/css?family=Lato:300,300i,700", rel="stylesheet")
-link(rel="stylesheet", href="/css/style.css")
-link(rel="shortcut icon", type="image/png", href="/img/favicon.png")
-title Natours | #{title}
+doctype html
+html 
+  head
+    block head
+      meta(charset="UTF-8")
+      meta(name="viewport", content="width=device-width,initial-scale=1")
+      link(href="https://fonts.googleapis.com/css?family=Lato:300,300i,700", rel="stylesheet")
+      link(rel="stylesheet", href="/css/style.css")
+      link(rel="shortcut icon", type="image/png", href="/img/favicon.png")
+      title Natours | #{title}
 
-//HEADER
-include _header
+  body
+
+    //HEADER
+    include _header
 
 
-// CONTENT
-block content
-  h1 This is a placeholder heading
+    // CONTENT
+    block content
+      h1 This is a placeholder heading
 
-//FOOTER
-include _footer
+    //FOOTER
+    include _footer
+
+    script(src='/js/leaflet.js')
