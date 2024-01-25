@@ -47,6 +47,7 @@ app.use('/api', limiter);
 // Body PArser, reading the data from body into req.body
 // if we have abody larger than 10 kilobytes it will not be accepted
 app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }))
 app.use(cookieParser())
 
 // Data Sanitization against NO-SQL query injection
@@ -73,7 +74,6 @@ app.use(hpp({
 // Test Middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  console.log(req.cookies);
   next();
 });
 

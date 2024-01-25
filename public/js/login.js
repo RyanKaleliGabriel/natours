@@ -13,8 +13,8 @@ export const login = async (email, password) => {
             }
         });
 
-        if (res.data.status === 'Success') {
-            showAlert('success','Logged in successfully!');
+        if (res.data.status === 'success') {
+            showAlert('success', 'Logged in successfully!');
             window.setTimeout(() => {
                 location.assign('/');
             }, 1500);
@@ -31,8 +31,8 @@ export const logout = async () => {
             method: 'GET',
             url: 'http://localhost:3000/api/v1/users/logout',
         });
-        if(res.data.status === 'success') location.reload(true)
-    } catch(err){
-        showAlert('error', 'Error logging out! Try again')
+        if (res.data.status === 'success') location.reload(true);
+    } catch (err) {
+        showAlert('error', 'Error logging out! Try again');
     }
-}
+};

@@ -30,7 +30,7 @@ const createSendToken = (user, statusCode, res) => {
   res.cookie('jwt', token, cookieOptions);
 
   res.status(statusCode).json({
-    status: 'Success',
+    status: 'success',
     token,
     data: {
       user
@@ -105,6 +105,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // Grant access to protected route
   req.user = currentUser;
+  res.locals.user = currentUser
   next();
 });
 
@@ -174,7 +175,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     });
 
     res.status(200).json({
-      status: 'Success',
+      status: 'success',
       message: 'Token sent to email!'
     });
   } catch (err) {

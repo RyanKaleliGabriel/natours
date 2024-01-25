@@ -2,6 +2,7 @@ const express = require('express');
 const userController = require('./../controllers/userController');
 const authController = require('../controllers/authController');
 
+
 const router = express.Router();
 
 router.post('/signup', authController.signup);
@@ -25,7 +26,7 @@ router.use(authController.protect)
 // No one can change the id from the jwt without knowing the secret
 // In the get method the getUser handler is called to put that user id into the params.id (faking that the id is coming from the url )
 router.get('/me', userController.getMe, userController.getUser)
-router.patch('/updateMe', userController.updateMe);
+router.patch('/updateMe', userController.uploadUserPhoto, userController.resizeUserPhoto, userController.updateMe);
 router.delete('/deleteMe', userController.deleteMe)
 
 router.use(authController.restrictTo('admin'))
