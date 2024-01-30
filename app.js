@@ -8,6 +8,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser')
 const compression = require('compression')
+const cors = require('cors')
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -26,6 +27,23 @@ app.set('view engine', 'pug')
 app.set('views', path.join(__dirname, 'views'))
 
 // 1) GLOBAL MIDDLEWARES
+
+// Implement Cors
+// Access-Control-Allow-Origin Header is set
+app.use(cors());
+
+// (backend, api.natours.com) (frontend natours.com)
+// if we had the frontend and backend in a different subdomain or domain this is what we should do
+// app.use(cors({
+//   origin: 'https://www.natours.com'
+// }))
+
+// Cors for non-simple requests(put, patch, delete or request that send cookies or use non standard headers),
+// The browser does an option request to see if the request is safe,
+// When we get the options request we send back to the browser cors() to tell it the nonsimple request
+// is safe to perform
+app.options('*', cors())
+// app.options('/api/v1/tours:/id', cors())
 
 // Serving static files
 // app.use(express.static(`${__dirname}/public`));
