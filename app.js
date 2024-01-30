@@ -16,6 +16,7 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoute')
 const bookingRouter = require('./routes/bookingRoutes')
+const bookingController = require('./controllers/bookingController')
 const viewRouter = require('./routes/viewRoutes')
 
 const app = express();
@@ -66,6 +67,11 @@ const limiter = rateLimit({
 
 // Applies the limiter to all routes only in the application
 app.use('/api', limiter);
+
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  bookingController.webhookcheckout)
 
 // Body PArser, reading the data from body into req.body
 // if we have abody larger than 10 kilobytes it will not be accepted
