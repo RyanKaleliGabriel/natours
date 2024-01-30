@@ -31,7 +31,7 @@ const sendErrorDev = (req, err, res) => {
     });
   }
   // B) RENDERED WEBSITE
-  console.error('Error ', err);
+  console.error('Error 💥', err);
   return res.status(err.statusCode).render('error', {
     title: 'Something went wrong!',
     msg: err.message
@@ -50,7 +50,7 @@ const sendErrorProd = (req, err, res) => {
     }
     // B) Programming error or other unknown error: don't leak error details
     // 1)Log error
-    console.error('Error ', err);
+    console.error('Error 💥', err);
 
     // 2)SEND A GENERIC MESSAGE
     return res.status(500).json({
@@ -61,7 +61,6 @@ const sendErrorProd = (req, err, res) => {
 
   // B) RENDERED WEBSITE
   if (err.isOperational) {
-    console.log(err)
     return res.status(err.statusCode).render('error', {
       title: 'Something went wrong!',
       msg: err.message
@@ -69,7 +68,7 @@ const sendErrorProd = (req, err, res) => {
   }
   // Programming error or other unknown error: don't leak error details
   // 1)Log error
-  console.error('Error ', err);
+  console.error('Error 💥', err);
 
   // 2)SEND A GENERIC MESSAGE
   return res.status(err.statusCode).render('error', {
