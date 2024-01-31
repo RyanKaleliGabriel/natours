@@ -34,7 +34,7 @@ exports.resizeTourImages = catchAsync(async (req, res, next) => {
   console.log(req.files)
   if (!req.files.imageCover || !req.files.images) return next()
   // 1) Cover Image
-  // we put the imag file name in the request.body so that in the next middleware it
+  // we put the image file name in the request.body so that in the next middleware it
   // will put that data onto the new document when it updates it
   req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`
   await sharp(req.files.imageCover[0].buffer)

@@ -12,6 +12,12 @@ class APIfeatures {
     // 2B)Advanced Filtering
     let queryStr = JSON.stringify(queryObj)
 
+    // For each match found in the string, the callback function is invoked.
+    // In the callback function, the matched operator is wrapped with a dollar sign ($).
+    // This is a syntax commonly used in MongoDB to denote certain comparison operators.
+    // So, for example, if the original queryStr was something like {"age": {"gte": 25}},
+    // after the replace method, it would become {"age": {"$gte": 25}}.
+
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`)
     // The reason why we use .find again is commented below
     this.query = this.query.find(JSON.parse(queryStr))

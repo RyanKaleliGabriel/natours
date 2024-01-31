@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const validator = require('validator');
+// const validator = require('validator');
 // const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema({
@@ -53,9 +53,7 @@ const tourSchema = new mongoose.Schema({
         return val < this.price;
       },
       message: 'Discount Price ({VALUE}) should be below the regular price'
-
     }
-
   },
   summary: {
     type: String,
@@ -68,7 +66,7 @@ const tourSchema = new mongoose.Schema({
   },
   imageCover: {
     type: String,
-    required: [true, 'A tour must have acover image']
+    required: [true, 'A tour must have a cover image']
   },
   images: [String],
   createdAt: {

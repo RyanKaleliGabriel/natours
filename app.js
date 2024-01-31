@@ -34,7 +34,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(cors());
 
 // (backend, api.natours.com) (frontend natours.com)
-// if we had the frontend and backend in a different subdomain or domain this is what we should do
+// if we had the frontend and backend in a different subdomains or domain this is what we should do
 // app.use(cors({
 //   origin: 'https://www.natours.com'
 // }))
